@@ -6,7 +6,7 @@
 
 
 PICTURE_DIR="$HOME/Pictures/grabsnap"
-PICTURE_DATE=$(date +%Y-%m-%d_%H.%M.%S)
+
 
 if [ ! -d $myimg ]; then
  mkdir "$myimg"
@@ -23,8 +23,10 @@ fi
 
 echo -e "Capture Script Running every $INTERVAL seconds: " 
 while [ $COUNTER -lt 100000 ]; do # could replace with true, but zombie protection is good.
+	PICTURE_DATE=$(date +%Y-%m-%d_%H.%M.%S)
 	isightcapture -t png "$PICTURE_DIR/SNAP_$PICTURE_DATE"
 	screencapture -T 0 -x "$PICTURE_DIR/DESK_$PICTURE_DATE.png"
+	sips --resampleWidth 960 "$PICTURE_DIR/DESK_$PICTURE_DATE.png" >>/dev/null 2>&1
 	echo -e "\r $PICTURE_DATE:  Another $INTERVAL Seconds down. So far:$COUNTER"
 	
 	for (( i=$INTERVAL; i>0; i-- )); do
