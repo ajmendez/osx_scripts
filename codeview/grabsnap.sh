@@ -13,14 +13,10 @@ if [ ! -z "$1" ]; then
 	PICTURE_DIR="$PICTURE_DIR/$1"
 fi
 
-
-
 if [ ! -d "$PICTURE_DIR" ]; then
 	echo "making $PICTURE_DIR"
  	mkdir -p "$PICTURE_DIR"
 fi
-
-
 
 if [ ! -z "$2" ]; then
     INTERVAL=$2
@@ -35,14 +31,13 @@ echo -e "Capture Script Running every $INTERVAL seconds: "
 COUNTER=0
 while [ $COUNTER -lt 100000 ]; do # could replace with true, but zombie protection is good.
 	PICTURE_DATE=$(date +%Y-%m-%d_%H.%M.%S)
-	isightcapture -t png "$PICTURE_DIR/SNAP_$PICTURE_DATE"
+	isightcapture -t png "$PICTURE_DIR/SNAP_$PICTURE_DATE.png"
+	
 	for (( c=0; c<=$MONITORS; c++ )); do 
-		FILES[$c]="$PICTURE_DIR/DESK${c}_$PICTURE_DATE.png"
+		FILES[$c]="$PICTURE_DIR/DESK-${c}_$PICTURE_DATE.png"
 	done
 	screencapture -C -T 0 -x ${FILES[@]}
-	for (( c=0; c<=$MONITORS; c++ )); do 
-		szips --resampleWidth 960 "$PICTURE_DIR/DESK${c}_$PICTURE_DATE.png" >>/dev/null 2>&1
-	done
+	sips --resampleWidth 960 ${FILES[@]} >>/dev/null 2>&1
 	
 	echo -e "\r $PICTURE_DATE:  Another $INTERVAL Seconds down. So far:$COUNTER"
 	
