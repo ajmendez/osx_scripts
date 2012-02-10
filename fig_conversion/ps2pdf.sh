@@ -1,0 +1,1 @@
+for i in $(ls *.ps); do ps2pdf $i; done
