@@ -4,7 +4,7 @@
 TEATIME=$((15*60))
 HR=$(($(date +%H)*60+$(date +%M)))
 if [[ "$HR" > "$TEATIME" ]]; then 
-  echo $(($TEATIME+24*60-$HR)) Minutes till Tea Time...
-else
   echo $(($TEATIME-$HR)) Minutes till Tea Time
+else
+  echo $(($TEATIME+24*60-$HR)) Minutes till Tea Time...
 fi

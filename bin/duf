@@ -1,0 +1,5 @@
+#!/bin/bash -e
+# Return a sorted list of human readable sizes from the directory that it was called.
+# Found off of the internet modifed a bit.
+
+du -sk * | sort -n | perl -ne '($s,$f)=split(m{\t});for (qw(K M G)) {if($s<1024) {printf("%.1f",$s);print "$_\t$f"; last};$s=$s/1024}'

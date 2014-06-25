@@ -1,0 +1,25 @@
+#!/bin/bash
+# set -o monitor  
+
+
+CMD='xload -bg black -fg white -hl white -update 1 -geometry 400x125-0-'
+
+i=0
+while true; do
+	if [ $1 ]; then 
+		ssh $1 -t "${CMD}$(((i * 125) + 10))" &
+		shift
+		i=$((i+1))
+	else
+		break
+	fi
+done
+
+# FAIL=0
+# for job in $(jobs -p); do
+# 	echo $job
+#     wait $job || let "FAIL+=1"
+# done
+# echo $FAIL
+
+# trap 'echo "child died"' CHLD

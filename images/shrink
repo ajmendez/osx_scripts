@@ -1,0 +1,114 @@
+#!/bin/bash
+# shrink : a simple image resizing program
+# Mendez : 2012.11.30
+
+usage() {
+	cat << EOF
+usage: $0 [options] image [image2 image3]
+
+This script shrinks an image so that the max size is resolution
+
+OPTIONS:
+	-h            Shows this message
+	-r [1500]     Max length in pixels
+	-e [_small]   Rename Extension
+	-s            Removes exif data
+	-o [/p/ath]   Output Path
+
+EOF
+exit 1
+}
+
+renameFile() {
+	ext="${1#*.}"
+	file="${1%.*}"
+	newfile="${file}$2.${ext}"
+	if [[ "$3" != "" ]]; then
+		newfile=${3%/}/$(basename ${newfile})
+	fi
+	echo ${newfile}
+}
+
+
+
+# Defaults
+resolution=1500
+extension="_small"
+removeexif=0
+outputPath=''
+
+# Parse Arguments
+if [ $# -lt 1 ]; then
+	usage
+fi
+while getopts "hsr:e:o: $*" OPTION; do
+	echo "Option: $OPTION argument: $OPTARG"
+	case $OPTION in
+		h)
+			usage
+			;;
+		r)
+			resolution=$OPTARG
+			;;
+		e)
+			extension=$OPTARG
+			;;
+		s)
+			removeexif=1
+			;;
+		o)
+			outputPath=$OPTARG
+			;;
+		?)
+			echo "ERROR -- Option not found: $OPTION"
+			usage
+			;;
+	esac
+done
+shift $(( OPTIND-1 ))
+
+
+#add a path if need be
+if [ ! "${outputPath}" == "" ]; then
+	if [ ! -d "${outputPath}" ]; then
+		mkdir -p ${outputPath}
+	fi
+fi
+
+
+
+# Reduce each file
+for file in "$@"; do
+	if [[ "$file" == *"${extension}"* ]]; then
+		echo "Already processed file: $file"
+		continue
+	fi
+	outfile=$(renameFile $file $extension $outputPath)
+	sips -Z $resolution $file --out $outfile &> /dev/null
+	if [ $removeexif -eq 1 ]; then
+		convert "$outfile" -strip "$outfile"
+	fi
+done
+
+
+
+# --reSampleWidth 1000
+
+
+
+# if [ ! -n "$1" ]; then
+#         echo "Usage: update-exif.sh 2012-06-06_13:12:00.jpg"
+#         echo
+#         exit
+# fi
+# 
+# filename=`basename $1`
+# IFS="."
+# tab=($filename)
+# exif=${tab[0]}
+# exif=`echo ${exif/_/ }`
+# exif=`echo ${exif//-/:}`
+# unset IFS
+# 
+# exiftool -overwrite_original -CreateDate="${exif}" -# DateTimeOriginal="${exif}" -ModifyDate="${exif}" $1
+# view raw# 
